@@ -1,12 +1,11 @@
 import { galleryItems } from "./gallery-items.js";
-console.log(galleryItems);
 // Change code below this line
+console.log(galleryItems);
 
 const gallerList = document.querySelector(".gallery");
 const cardsMarkup = createGalleryMarkup(galleryItems);
 
-gallerList.insertAdjacentHTML("afterbegin", cardsMarkup);
-gallerList.addEventListener("click", onPictureClick);
+gallerList.insertAdjacentHTML("beforeend", cardsMarkup);
 
 function createGalleryMarkup(galleryItems) {
   return galleryItems
@@ -27,9 +26,35 @@ function createGalleryMarkup(galleryItems) {
     .join("");
 }
 
+gallerList.addEventListener("click", onPictureClick);
+
 function onPictureClick(evt) {
   evt.preventDefault();
-  if (!evt.target.classList.containes("gallery__item")) {
+  if (evt.target.nodeName !== "IMG") {
     return;
   }
+
+  const imgUrl = evt.target.dataset.source;
+  instance.element().querySelector(".modal-img").src = imgUrl;
+  instance.show();
 }
+
+function onKeyDown(e) {
+  if (e.code === "Escape") {
+    instance.close();
+  }
+}
+
+const instance = basicLightbox.create(
+  `<img class='modal-img' width="800" height="600">`,
+  {
+    onShow: (instance) => {
+      window.addEventListener("keydown", onKeyDown);
+      console.log("onShow");
+    },
+    onClose: (instance) => {
+      window.removeEventListener("keydown", onKeyDown);
+      console.log("onClose");
+    },
+  }
+);
